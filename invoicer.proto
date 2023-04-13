@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+option go_package = "./invoicer;";
+
+message Account {
+    int64 id = 1;
+    string name = 2; 
+}
+
+message RequestDest {
+    string from = 1;
+    string to = 2;
+}
+
+message Message {
+    string message = 1;
+}
+
+message CreateRequest {
+    Account account = 1;
+    RequestDest request = 2;
+    Message message = 3;
+}
+
+message CreateResponse {
+    RequestDest request = 1;
+    Message message = 2;
+}
+
+service Invoicer {
+    rpc Create(CreateRequest) returns (CreateResponse);
+}
