@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type InvoicerClient interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
+	GetInformations(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*RequestDest, error)
 }
 
 type invoicerClient struct {
@@ -42,11 +43,21 @@ func (c *invoicerClient) Create(ctx context.Context, in *CreateRequest, opts ...
 	return out, nil
 }
 
+func (c *invoicerClient) GetInformations(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*RequestDest, error) {
+	out := new(RequestDest)
+	err := c.cc.Invoke(ctx, "/Invoicer/GetInformations", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // InvoicerServer is the server API for Invoicer service.
 // All implementations should embed UnimplementedInvoicerServer
 // for forward compatibility
 type InvoicerServer interface {
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
+	GetInformations(context.Context, *CreateRequest) (*RequestDest, error)
 }
 
 // UnimplementedInvoicerServer should be embedded to have forward compatible implementations.
@@ -55,6 +66,9 @@ type UnimplementedInvoicerServer struct {
 
 func (UnimplementedInvoicerServer) Create(context.Context, *CreateRequest) (*CreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+}
+func (UnimplementedInvoicerServer) GetInformations(context.Context, *CreateRequest) (*RequestDest, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetInformations not implemented")
 }
 
 // UnsafeInvoicerServer may be embedded to opt out of forward compatibility for this service.
@@ -86,6 +100,24 @@ func _Invoicer_Create_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Invoicer_GetInformations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InvoicerServer).GetInformations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Invoicer/GetInformations",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InvoicerServer).GetInformations(ctx, req.(*CreateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Invoicer_ServiceDesc is the grpc.ServiceDesc for Invoicer service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -96,6 +128,10 @@ var Invoicer_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Create",
 			Handler:    _Invoicer_Create_Handler,
+		},
+		{
+			MethodName: "GetInformations",
+			Handler:    _Invoicer_GetInformations_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

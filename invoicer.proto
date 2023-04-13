@@ -8,8 +8,8 @@ message Account {
 }
 
 message RequestDest {
-    string from = 1;
-    string to = 2;
+    Account from = 1;
+    Account to = 2;
 }
 
 message Message {
@@ -29,4 +29,5 @@ message CreateResponse {
 
 service Invoicer {
     rpc Create(CreateRequest) returns (CreateResponse);
+    rpc GetInformations(CreateRequest) returns (RequestDest);
 }
